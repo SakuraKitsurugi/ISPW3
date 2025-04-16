@@ -1,0 +1,14 @@
+/Users/sakura/RiderProjects/ISPW3/ISPW3/bin/Debug/net7.0/ISPW3
+/Users/sakura/RiderProjects/ISPW3/ISPW3/bin/Debug/net7.0/ISPW3.deps.json
+/Users/sakura/RiderProjects/ISPW3/ISPW3/bin/Debug/net7.0/ISPW3.runtimeconfig.json
+/Users/sakura/RiderProjects/ISPW3/ISPW3/bin/Debug/net7.0/ISPW3.dll
+/Users/sakura/RiderProjects/ISPW3/ISPW3/bin/Debug/net7.0/ISPW3.pdb
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ISPW3.GeneratedMSBuildEditorConfig.editorconfig
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ISPW3.AssemblyInfoInputs.cache
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ISPW3.AssemblyInfo.cs
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ISPW3.csproj.CoreCompileInputs.cache
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ISPW3.dll
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/refint/ISPW3.dll
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ISPW3.pdb
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ISPW3.genruntimeconfig.cache
+/Users/sakura/RiderProjects/ISPW3/ISPW3/obj/Debug/net7.0/ref/ISPW3.dll
