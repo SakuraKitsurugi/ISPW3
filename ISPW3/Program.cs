@@ -35,18 +35,16 @@ class Program {
 		// Calculate n and φ(n) (φ(n) is calculated using Euler’s Totient Function)
 		int n = p * q;
 		int phi = (p - 1) * (q - 1);
-
+		
 		// Plaintext input, conversion into numberical value and x < n check
-		while (true) {
-			Console.Clear();
-			Console.WriteLine("Enter plaintext:");
-			x = Console.ReadLine();
-			plainTextNumerical = TextToNumber(x);
-			if (plainTextNumerical >= n) {
-				Console.WriteLine("Plaintext numerical expression is too big!");
-			}
-			else {
-				break;
+		Console.Clear();
+		Console.WriteLine("Enter plaintext:");
+		x = Console.ReadLine();
+		BigInteger[] plaintextNumerical = new BigInteger[x.Length];
+		for (int i = 0; i < x.Length; i++) {
+			plaintextNumerical[i] = TextToNumber(x[i].ToString());
+			if (plaintextNumerical[i] >= n) {
+				throw new Exception("Plaintext symbol's numerical value is higher than n!");
 			}
 		}
 
@@ -54,28 +52,28 @@ class Program {
 		int publicKey = FindPublicKey(phi);
 
 		// Encrypt x using ModPow
-		BigInteger encrypted = Encrypt(plainTextNumerical, publicKey, n);
+		BigInteger[] encrypted = Encrypt(plaintextNumerical, publicKey, n);
 		
 		// Save everything into a file
-		SaveToFile(encrypted, publicKey);
+		SaveToFile(encrypted, publicKey, n);
 
 		// Find public key using inverse formula
 		int privateKey = FindPrivateKey(publicKey, phi);
 
 		// Decrypt y using ModPow
-		BigInteger decrypted = Decrypt(encrypted, privateKey, n);
+		BigInteger[] decrypted = Decrypt(encrypted, privateKey, n);
 
 		// Brute force p and q - PLACEHOLDER DUE TO LACK OF KNOWLEDGE
-		//(int pBrute, int qBrute) = BruteForcePrimes();
+		(int pBrute, int qBrute) = BruteForcePrimes(n);
 
 		// Read everything from the file and display the information
 		Console.Clear();
-		Console.WriteLine($"Plaintext: {x}\nNumerical Plaintext: {plainTextNumerical}");
-		var (readText, readPuKey) = ReadFromFile();
+		Console.WriteLine($"Plaintext: {x}");
+		var (readText, readPuKey, readN) = ReadFromFile();
 		Console.WriteLine(
-			$"Read from file:\nEncrypted Plaintext: {readText} & Public Key: {readPuKey}\nPrivate Key: {privateKey}");
-		Console.WriteLine($"Decrypted: {decrypted}");
-		//Console.WriteLine($"Brute forced p and q: {pBrute} & {qBrute}");
+			$"Read from file:\nEncrypted Plaintext: {string.Join("|", encrypted)} & Public Key: {readPuKey} & N: {readN}\nPrivate Key: {privateKey}");
+		Console.WriteLine($"Decrypted: {string.Join("|", decrypted)}");
+		Console.WriteLine($"Brute forced p and q: {pBrute} & {qBrute}");
 	}
 
 	// Checks if the passed number is a prime or not
@@ -148,7 +146,7 @@ class Program {
 	}
 
 	// Using brute force method finds p and q from encrypted text and public key
-	static (int, int) BruteForcePrimes(int phi) {
+	static (int, int) BruteForcePrimes(int n) {
 		// Precompiles all primary numbers with the int upper limit of 1000
 		List<int> primeList = new List<int>();
 		for (int i = 2; i <= 1000; i++) {
@@ -156,31 +154,54 @@ class Program {
 				primeList.Add(i);
 			}
 		}
-		
-		
+
+		foreach (int primeP in primeList) {
+			foreach (int primeQ in primeList) {
+				if (primeP * primeQ == n && primeP != primeQ) {
+					return (primeP, primeQ);
+				}
+			}
+		}
 			
 		return (0, 0);
 	}
 
 	// Encryption method
-	static BigInteger Encrypt(BigInteger text, BigInteger publicKey, BigInteger n) {
-		return BigInteger.ModPow(text, publicKey, n);
+	static BigInteger[] Encrypt(BigInteger[] text, BigInteger publicKey, BigInteger n) {
+		BigInteger[] encrypted = new BigInteger[text.Length];
+		for (int i = 0; i < text.Length; i++) {
+			encrypted[i] = BigInteger.ModPow(text[i], publicKey, n);
+		}
+
+		return encrypted;
 	}
 
 	// Decryption method
-	static BigInteger Decrypt(BigInteger text, BigInteger privateKey, BigInteger n) {
-		return BigInteger.ModPow(text, privateKey, n);
+	static BigInteger[] Decrypt(BigInteger[] text, BigInteger privateKey, BigInteger n) {
+		BigInteger[] decrypted = new BigInteger[text.Length];
+		for (int i = 0; i < text.Length; i++) {
+			decrypted[i] = BigInteger.ModPow(text[i], privateKey, n);
+		}
+
+		return decrypted;
 	}
 
 	// Saves encrypted text and public key into a file
-	static void SaveToFile(BigInteger encryptedText, int publicKey) {
-		File.WriteAllText("RSA.txt", $"{encryptedText}\n{publicKey}");
+	static void SaveToFile(BigInteger[] encrypted, int publicKey, int n) {
+		string encryptedText = string.Join("|", encrypted);
+		File.WriteAllText("RSA.txt", $"{encryptedText}\n{publicKey}\n{n}");
 	}
 
 	// Reads information from the RSA.txt file
-	static (BigInteger encryptedText, int publicKey) ReadFromFile() {
+	static (BigInteger[] encrypted, int publicKey, int n) ReadFromFile() {
 		string[] lines = File.ReadAllLines("RSA.txt");
-		return (BigInteger.Parse(lines[0]), int.Parse(lines[1]));
+		string[] encryptedValues = lines[0].Split('|');
+		BigInteger[] encryptedText = new BigInteger[encryptedValues.Length];
+		for (int i = 0; i < encryptedValues.Length; i++)
+		{
+			encryptedText[i] = BigInteger.Parse(encryptedValues[i]);
+		}
+		return (encryptedText, int.Parse(lines[1]), int.Parse(lines[2]));
 	}
 
 	// Simple showcase of RSA encryption and decryption using the cryptography library
