@@ -55,6 +55,9 @@ class Program {
 
 		// Encrypt x using ModPow
 		BigInteger encrypted = Encrypt(plainTextNumerical, publicKey, n);
+		
+		// Save everything into a file
+		SaveToFile(encrypted, publicKey);
 
 		// Find public key using inverse formula
 		int privateKey = FindPrivateKey(publicKey, phi);
@@ -62,18 +65,20 @@ class Program {
 		// Decrypt y using ModPow
 		BigInteger decrypted = Decrypt(encrypted, privateKey, n);
 
-		// Save everything into a file
-		SaveToFile(encrypted, publicKey, privateKey);
+		// Brute force p and q - PLACEHOLDER DUE TO LACK OF KNOWLEDGE
+		//(int pBrute, int qBrute) = BruteForcePrimes();
 
 		// Read everything from the file and display the information
 		Console.Clear();
 		Console.WriteLine($"Plaintext: {x}\nNumerical Plaintext: {plainTextNumerical}");
-		var (readText, readPuKey, readPrKey) = ReadFromFile();
-		Console.WriteLine($"Read from file:\nEncrypted Plaintext: {readText}\nPublic Key: {readPuKey}\nPrivate Key: {readPrKey}");
+		var (readText, readPuKey) = ReadFromFile();
+		Console.WriteLine(
+			$"Read from file:\nEncrypted Plaintext: {readText} & Public Key: {readPuKey}\nPrivate Key: {privateKey}");
 		Console.WriteLine($"Decrypted: {decrypted}");
-		Console.WriteLine($"Calculated p and q: {p} & {q}");
+		//Console.WriteLine($"Brute forced p and q: {pBrute} & {qBrute}");
 	}
 
+	// Checks if the passed number is a prime or not
 	static bool IsPrime(int number) {
 		for (int i = 2; i < number; i++) {
 			if (number % i == 0 && i != number) return false;
@@ -82,26 +87,26 @@ class Program {
 		return true;
 	}
 
+	// Converts text input into numerical value, but only works on very short words
 	static BigInteger TextToNumber(string text) {
 		byte[] bytes = Encoding.UTF8.GetBytes(text);
 		return new BigInteger(bytes);
 	}
 
+	// Finds public key e by finding the smallest possible comprime (1 < i < φ(n))
 	static int FindPublicKey(int phi) {
-		// Find smallest possible i coprime (1 < i < φ(n))
 		for (int i = 2; i < phi; i++)
 			if (GCD(i, phi) == 1)
 				return i;
 		throw new Exception("Could not find a valid public key!");
 	}
 
+	// Finds private key
 	static int FindPrivateKey(int publicKey, int phi) {
-		// int d = ExtendedGCD(publicKey, phi);
-		// if (d < 0) d += phi;
-		// return d;
 		return ModInverse(publicKey, phi);
 	}
 
+	// Greatest Common Divisor
 	static int GCD(int i, int phi) {
 		while (phi != 0) {
 			int tempPhi = phi;
@@ -112,16 +117,15 @@ class Program {
 		return i;
 	}
 
+	// Finds private key D using inverse mod. I have no clue how to mathematically calculate this and have to completely rely on the code.
 	static int ModInverse(int puKey, int phi) {
-		// ?????? I HONESTLY HAVE NO CLUE HOW MOD INVERSE IS MATHEMATICALLY CALCULATED
 		int phiCopy = phi;
 		int y = 0, x = 1;
-        
+
 		if (phi == 1)
 			return 0;
 
-		while (puKey > 1)
-		{
+		while (puKey > 1) {
 			// q is quotient
 			int q = puKey / phi;
 			int t = phi;
@@ -143,23 +147,43 @@ class Program {
 		return x;
 	}
 
+	// Using brute force method finds p and q from encrypted text and public key
+	static (int, int) BruteForcePrimes(int phi) {
+		// Precompiles all primary numbers with the int upper limit of 1000
+		List<int> primeList = new List<int>();
+		for (int i = 2; i <= 1000; i++) {
+			if (IsPrime(i)) {
+				primeList.Add(i);
+			}
+		}
+		
+		
+			
+		return (0, 0);
+	}
+
+	// Encryption method
 	static BigInteger Encrypt(BigInteger text, BigInteger publicKey, BigInteger n) {
 		return BigInteger.ModPow(text, publicKey, n);
 	}
 
+	// Decryption method
 	static BigInteger Decrypt(BigInteger text, BigInteger privateKey, BigInteger n) {
 		return BigInteger.ModPow(text, privateKey, n);
 	}
 
-	static void SaveToFile(BigInteger encryptedText, int publicKey, int privateKey) {
-		File.WriteAllText("RSA.txt", $"{encryptedText}\n{publicKey}\n{privateKey}");
+	// Saves encrypted text and public key into a file
+	static void SaveToFile(BigInteger encryptedText, int publicKey) {
+		File.WriteAllText("RSA.txt", $"{encryptedText}\n{publicKey}");
 	}
 
-	static (BigInteger encryptedText, int publicKey, int privateKey) ReadFromFile() {
+	// Reads information from the RSA.txt file
+	static (BigInteger encryptedText, int publicKey) ReadFromFile() {
 		string[] lines = File.ReadAllLines("RSA.txt");
-		return (BigInteger.Parse(lines[0]), int.Parse(lines[1]), int.Parse(lines[2]));
+		return (BigInteger.Parse(lines[0]), int.Parse(lines[1]));
 	}
 
+	// Simple showcase of RSA encryption and decryption using the cryptography library
 	static void LibraryDecryptionEncryption() {
 		Console.WriteLine("Enter text to encrypt:");
 		string plaintext = Console.ReadLine();
