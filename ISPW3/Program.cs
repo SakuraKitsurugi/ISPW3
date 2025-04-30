@@ -91,7 +91,7 @@ class Program {
 		return new BigInteger(bytes);
 	}
 
-	// Finds public key e by finding the smallest possible comprime (1 < i < φ(n))
+	// Finds public key e by finding the smallest possible coprime (2 < i < φ(n))
 	static int FindPublicKey(int phi) {
 		for (int i = 2; i < phi; i++)
 			if (GCD(i, phi) == 1)
