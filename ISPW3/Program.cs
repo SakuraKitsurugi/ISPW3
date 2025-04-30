@@ -61,7 +61,7 @@ class Program {
 		int privateKey = FindPrivateKey(publicKey, phi);
 
 		// Decrypt y using ModPow
-		BigInteger[] decrypted = Decrypt(encrypted, privateKey, n);
+		string decryptedText = Decrypt(encrypted, privateKey, n);
 
 		// Brute force p and q - PLACEHOLDER DUE TO LACK OF KNOWLEDGE
 		(int pBrute, int qBrute) = BruteForcePrimes(n);
@@ -72,7 +72,7 @@ class Program {
 		var (readText, readPuKey, readN) = ReadFromFile();
 		Console.WriteLine(
 			$"Read from file:\nEncrypted Plaintext: {string.Join("|", encrypted)} & Public Key: {readPuKey} & N: {readN}\nPrivate Key: {privateKey}");
-		Console.WriteLine($"Decrypted: {string.Join("|", decrypted)}");
+		Console.WriteLine($"Decrypted: {decryptedText}");
 		Console.WriteLine($"Brute forced p and q: {pBrute} & {qBrute}");
 	}
 
@@ -177,13 +177,15 @@ class Program {
 	}
 
 	// Decryption method
-	static BigInteger[] Decrypt(BigInteger[] text, BigInteger privateKey, BigInteger n) {
-		BigInteger[] decrypted = new BigInteger[text.Length];
+	static string Decrypt(BigInteger[] text, BigInteger privateKey, BigInteger n) {
+		char[] decrypted = new char[text.Length];
 		for (int i = 0; i < text.Length; i++) {
-			decrypted[i] = BigInteger.ModPow(text[i], privateKey, n);
+			int decryptedNumerical = (int)BigInteger.ModPow(text[i], privateKey, n);
+			decrypted[i] = Convert.ToChar(decryptedNumerical);
 		}
+		string decryptedStr = new string(decrypted);
 
-		return decrypted;
+		return decryptedStr;
 	}
 
 	// Saves encrypted text and public key into a file
