@@ -1,7 +1,8 @@
 > [!IMPORTANT]
 > Grade: 9/10
-## Task:
+## Description:
 **Develop an RSA algorithm encryption/decryption system. The prime numbers p and q should not exceed 1000.**
+## Tasks:
 - - [x] Input of initial data: two primary numbers p and q, initial plaintext x.
 - - [x] Finding the parameters required for encryption/decryption algorithms. Public key finding, Euclidean algorithm implementation, Euclidean advanced algorithm implementation.
 - - [x] Encryption of the plaintext x.
